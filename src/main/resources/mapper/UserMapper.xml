@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yonyou.demo.dao.UserDao">
+
+    <!--<cache type="com.wooyoo.learning.util.RedisCache"/>-->
+    <resultMap id="user" type="com.yonyou.demo.entity.User">
+        <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="code" property="code" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="phone_number" property="phoneNumber" jdbcType="BIGINT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+
+    </resultMap>
+    
+    <sql id="BaseColumn">
+        id,name,code,type,phone_number,create_time,modify_time,status
+    </sql>
+
+    <select id="getAllUser" resultMap="user">
+        SELECT <include refid="BaseColumn"/>  FROM user
+    </select>
+
+    <select id="getUserByUserId" resultMap="user" parameterType="java.lang.String">
+        select <include refid="BaseColumn"/> from user where id=#{userId}
+    </select>
+
+    <select id="getUserByPhoneNumber" resultMap="user" parameterType="java.lang.String">
+        select <include refid="BaseColumn"/> from user where phone_number=#{phoneNumber}
+    </select>
+
+    <select id="getUserByUserCode" resultMap="user" parameterType="java.lang.String">
+        select <include refid="BaseColumn"/> from user where code=#{userCode}
+    </select>
+
+    <insert id="saveUser" parameterType="com.yonyou.demo.entity.User" >
+        <!--<selectKey resultType="java.lang.Long" keyProperty="id">
+            select LAST_INSERT_ID()
+        </selectKey>-->
+        <!--uuid作为主键 -->
+        <selectKey keyProperty="id" resultType="java.lang.String" order="BEFORE" >
+
+            select replace(uuid(),'-','') from dual
+
+        </selectKey>
+        insert into user  (id,name,code,type,phone_number,create_time,modify_time,status)
+        values (#{id},#{name},#{code},#{type},#{phoneNumber},current_timestamp ,#{modifyTime},#{status})
+    </insert>
+    
+    <update id="updateUser" parameterType="com.yonyou.demo.entity.User">
+        update user set
+        <if test="name!=null || ''!=name">name=#{name},</if>
+        <if test="type!=null || ''!=type">type=#{type},</if>
+        <if test="phoneNumber!=null || ''!=phoneNumber">phone_number=#{phoneNumber},</if>
+        <if test="status!=null || ''!=status">status=#{status},</if>
+        modify_time = now()
+        where id = #{id}
+    </update>
+
+
+
+</mapper>

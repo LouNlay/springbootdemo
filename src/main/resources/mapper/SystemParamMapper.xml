@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yonyou.demo.dao.SystemParamMapper">
+    <resultMap id="systemParam" type="com.yonyou.demo.entity.SystemParam">
+        <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="code" property="code" jdbcType="VARCHAR"/>
+        <result column="value" property="value" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP"/>
+
+
+    </resultMap>
+
+    <sql id="BaseColumn">
+        id,code,value,description,status,create_time,modify_time
+    </sql>
+
+    <select id="queryParamByCode" resultMap="systemParam">
+        select
+        <include refid="BaseColumn"/>
+         from sys_param where code = #{paramCode}
+    </select>
+
+    <select id="countNumber" resultType="java.lang.Long">
+        SELECT COUNT(0) from sys_param
+    </select>
+    
+    <select id="pageQuery" resultMap="systemParam" parameterType="com.yonyou.demo.entity.page.PageQueryEntity">
+
+        SELECT * from sys_param where status in ('using','non') LIMIT #{pageStart},#{pageSize}
+    </select>
+    
+    
+    <insert id="saveParam" parameterType="com.yonyou.demo.entity.SystemParam">
+        <selectKey resultType="java.lang.String" keyProperty="id"  order="BEFORE">
+            select replace(uuid(),'-','') from dual
+        </selectKey>
+        insert into sys_param
+        (id,code,value,description,status,create_time)
+        values (#{id},#{code},#{value},#{description},#{status},now())
+    </insert>
+    
+    <update id="updateParam" parameterType="com.yonyou.demo.entity.SystemParam">
+        update sys_param set
+        value = #{value},description=#{description},status=#{status},modify_time=now()
+        where id = #{id}
+    </update>
+    
+    <delete id="deleteParam" parameterType="com.yonyou.demo.entity.SystemParam">
+        update sys_param set status = 'deleted', modify_time=now() where id = #{id}
+    </delete>
+</mapper>

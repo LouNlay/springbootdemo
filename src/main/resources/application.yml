@@ -1,0 +1,27 @@
+spring:
+  # 数据库配置
+    datasource:
+      url: jdbc:mysql://221.226.180.186:45906/lay_test?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone = GMT
+      username: lay
+      password: 1
+      driver-class-name: com.mysql.jdbc.Driver
+
+
+  # mybatis配置
+mybatis:
+    mapper-locations: classpath*:mapper/*.xml
+#    configuration:
+#      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
+#日志
+logging:
+  path: logs/log
+  config: classpath:logback-spring.xml
+  level:
+    com.yonyou.demo : debug
+
+
+#logging:
+#  level: debug
+#  file: logs/yonyou.log
